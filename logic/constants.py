@@ -15,5 +15,14 @@ EMOJI_MAP = {
     "Audio": "🎵",
     "Archives": "📦",
     "Code": "💻",
-    "Other": "📁"
+    "Other": "📁",
+    # Folders used by the GUI for quick creation
+    "Gaming": "🎮",
+    "School": "🎓",
+    "Work": "💼",
+    "Projects": "📂",
+    "Custom": "✨"
 }
+
+# Default folder presets offered by the application
+DEFAULT_FOLDERS = ["Gaming", "School", "Work", "Projects"]
