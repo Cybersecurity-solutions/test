@@ -11,28 +11,10 @@ import time
 from PIL import Image
 import webbrowser
 
+from logic.constants import FILE_TYPES, EMOJI_MAP, DEFAULT_FOLDERS
+
 # from gui.main_window import setup_gui
 # from utils.admin import elevate_to_admin
-
-# ─────── Constants ───────
-FILE_TYPES = {
-    "Documents": [".pdf", ".doc", ".docx", ".txt", ".xls", ".xlsx", ".ppt", ".pptx"],
-    "Images": [".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".svg"],
-    "Videos": [".mp4", ".mkv", ".mov", ".avi", ".flv", ".wmv"],
-    "Audio": [".mp3", ".wav", ".aac", ".flac", ".ogg"],
-    "Archives": [".zip", ".rar", ".7z", ".tar", ".gz"],
-    "Code": [".py", ".js", ".html", ".css", ".cpp", ".c", ".java", ".cs"]
-}
-
-EMOJI_MAP = {
-    "Documents": "📄",
-    "Images": "📷",
-    "Videos": "🎥",
-    "Audio": "🎵",
-    "Archives": "📦",
-    "Code": "💻",
-    "Other": "📁"
-}
 
 SOCIAL_MEDIA_ASSETS = {
     "discord": "discord.png",
@@ -324,33 +306,17 @@ percentage_label = ctk.CTkLabel(
 percentage_label.pack(pady=(5, 5))
 
 # ─────── Folder Organization Logic ───────
-# Remove file-moving logic and replace with folder creation logic
-# Update folder creation logic to exclude emoji in folder names
-def create_folders(folder_path, preset, custom_folder=None):
-    """Create folders with emojis based on the selected preset or custom folder."""
-    emoji_map = {
-        "Gaming": "🎮",
-        "School": "🎓",
-        "Work": "💼",
-        "Projects": "📂",
-        "Custom": "✨"
-    }
+from logic.file_operations import create_folders
 
+def run_create_folders(folder_path, preset, custom_folder=None):
+    """Create folders using logic.file_operations and update the GUI."""
     try:
-        # Ensure all default folders are created when "Create Default" is selected
-        if preset == "📂 Create Default":
-            folders = [f"{emoji_map['Gaming']} Gaming", f"{emoji_map['School']} School", f"{emoji_map['Work']} Work", f"{emoji_map['Projects']} Projects"]
-        elif preset != "✨ Custom":
-            folders = [f"{emoji_map.get(preset, '')} {preset}"]
-        else:
-            folders = [f"{emoji_map.get('Custom', '')} {custom_folder}"] if custom_folder else []
-
+        folders = create_folders(folder_path, preset, custom_folder)
         progress_bar['maximum'] = len(folders)
+
         for i, folder in enumerate(folders, start=1):
             dest_folder = os.path.join(folder_path, folder)
-            os.makedirs(dest_folder, exist_ok=True)
 
-            # Update progress bar and percentage label
             progress_bar['value'] = i
             percentage_label.configure(text=f"{round((i / len(folders)) * 100)}%")
             app.update_idletasks()
@@ -361,11 +327,10 @@ def create_folders(folder_path, preset, custom_folder=None):
 
         messagebox.showinfo("Done", f"✅ Created {len(folders)} folder(s).")
     except Exception as e:
-        error_message = f"Failed to create folders - {str(e)}"
+        error_message = str(e)
         logging.error(error_message)
         messagebox.showerror("Error", error_message)
     finally:
-        # Reset progress bar and percentage label after completion
         progress_bar['value'] = 0
         percentage_label.configure(text="0%")
 
@@ -378,7 +343,7 @@ def browse_and_create_folders():
     if folder_path:
         preset = category_combobox.get()
         custom_folder = custom_folder_entry.get() if preset == "Custom" else None
-        create_folders(folder_path, preset, custom_folder)
+        run_create_folders(folder_path, preset, custom_folder)
 
 # ─────── Settings Tab Content ───────
 SETTINGS = {

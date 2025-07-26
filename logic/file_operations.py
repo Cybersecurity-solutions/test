@@ -2,11 +2,12 @@
 
 # ─────── Folder Organization Logic ───────
 def create_folders(folder_path, preset, custom_folder=None):
-    from logic.constants import EMOJI_MAP
+    """Create folders in *folder_path* based on a selected preset."""
+    from logic.constants import EMOJI_MAP, DEFAULT_FOLDERS
     import os
     try:
         if preset == "📂 Create Default":
-            folders = [f"{EMOJI_MAP['Gaming']} Gaming", f"{EMOJI_MAP['School']} School", f"{EMOJI_MAP['Work']} Work", f"{EMOJI_MAP['Projects']} Projects"]
+            folders = [f"{EMOJI_MAP[name]} {name}" for name in DEFAULT_FOLDERS]
         elif preset != "✨ Custom":
             folders = [f"{EMOJI_MAP.get(preset, '')} {preset}"]
         else:
@@ -15,6 +16,8 @@ def create_folders(folder_path, preset, custom_folder=None):
         for folder in folders:
             dest_folder = os.path.join(folder_path, folder)
             os.makedirs(dest_folder, exist_ok=True)
+        return folders
 
     except Exception as e:
         raise RuntimeError(f"Failed to create folders - {str(e)}")
+
