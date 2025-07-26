@@ -316,6 +316,7 @@ def run_create_folders(folder_path, preset, custom_folder=None):
 
         for i, folder in enumerate(folders, start=1):
             dest_folder = os.path.join(folder_path, folder)
+            os.makedirs(dest_folder, exist_ok=True)  # Ensure the folder is created
 
             progress_bar['value'] = i
             percentage_label.configure(text=f"{round((i / len(folders)) * 100)}%")
